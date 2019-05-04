@@ -436,10 +436,13 @@ Install_Pcre()
 Install_Jemalloc()
 {
     Echo_Blue "[+] Installing ${Jemalloc_Ver}"
-    cd ${cur_dir}/src
-    Tarj_Cd ${Jemalloc_Ver}.tar.bz2 ${Jemalloc_Ver}
+    cd ${cur_dir}/starry-lnmp/jemalloc
+    tar -jxv -f jemalloc-5.2.0.tar.bz2
+    cd jemalloc-5.2.0
+    ./autogen.sh
     ./configure
     Make_Install
+    echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
     ldconfig
     cd ${cur_dir}/src/
     rm -rf ${cur_dir}/src/${Jemalloc_Ver}
