@@ -423,9 +423,9 @@ Install_Pcre()
 {
     if [ ! -s /usr/bin/pcre-config ] || /usr/bin/pcre-config --version | grep -vEqi '^8.'; then
         Echo_Blue "[+] Installing ${Pcre_Ver}"
-        cd ${cur_dir}/src
-        Download_Files ${Download_Mirror}/web/pcre/${Pcre_Ver}.tar.bz2 ${Pcre_Ver}.tar.bz2
-        Tarj_Cd ${Pcre_Ver}.tar.bz2 ${Pcre_Ver}
+        cd ${cur_dir}/starry-lnmp/pcre
+        tar -jxv -f pcre-8.43.tar.bz2
+        cd pcre-8.43
         ./configure
         Make_Install
         cd ${cur_dir}/src/
