@@ -1,0 +1,18 @@
+[submodule "starry-lnmp/nginx-module/ngx_brotli-eustas"]
+	path = starry-lnmp/nginx-module/ngx_brotli-eustas
+	url = https://github.com/eustas/ngx_brotli.git
+[submodule "starry-lnmp/nginx-module/nginx-ct"]
+	path = starry-lnmp/nginx-module/nginx-ct
+	url = https://github.com/grahamedgecombe/nginx-ct.git
+[submodule "starry-lnmp/openssl"]
+	path = starry-lnmp/openssl
+	url = https://github.com/openssl/openssl.git
+[submodule "starry-lnmp/zlib-cf"]
+	path = starry-lnmp/zlib-cf
+	url = https://github.com/cloudflare/zlib.git
+[submodule "starry-lnmp/patch/hakasenyang-openssl-patch"]
+	path = starry-lnmp/patch/hakasenyang-openssl-patch
+	url = https://github.com/hakasenyang/openssl-patch.git
+[submodule "starry-lnmp/patch/kn007-patch"]
+	path = starry-lnmp/patch/kn007-patch
+	url = https://github.com/kn007/patch.git
