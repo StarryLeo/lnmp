@@ -11,12 +11,12 @@ Install_Nginx_Openssl()
             Download_Files ${Download_Mirror}/lib/openssl/${Openssl_Ver}.tar.gz ${Openssl_Ver}.tar.gz
             [[ -d "${Openssl_Ver}" ]] && rm -rf ${Openssl_Ver}
             tar zxf ${Openssl_Ver}.tar.gz
-            Nginx_With_Openssl="--with-openssl=${cur_dir}/src/${Openssl_Ver}"
+            Nginx_With_Openssl=""
         else
             Download_Files ${Download_Mirror}/lib/openssl/${Openssl_New_Ver}.tar.gz ${Openssl_New_Ver}.tar.gz
             [[ -d "${Openssl_New_Ver}" ]] && rm -rf ${Openssl_New_Ver}
             tar zxf ${Openssl_New_Ver}.tar.gz
-            Nginx_With_Openssl="--with-openssl=${cur_dir}/src/${Openssl_New_Ver} --with-openssl-opt='enable-weak-ssl-ciphers'"
+            Nginx_With_Openssl=""
         fi
     fi
 }
@@ -71,7 +71,19 @@ Install_Nginx()
     cd ${cur_dir}/src
     Install_Nginx_Openssl
     Install_Nginx_Lua
-    Tar_Cd ${Nginx_Ver}.tar.gz ${Nginx_Ver}
+    cd ${cur_dir}/starry-lnmp/zlib-cf
+    make -f Makefile.in distclean
+    cd ${cur_dir}/starry-lnmp/openssl
+    patch -p1 < ${cur_dir}/starry-lnmp/patch/hakasenyang-openssl-patch/openssl-equal-3.0.0-dev_ciphers.patch
+    patch -p1 < ${cur_dir}/starry-lnmp/patch/hakasenyang-openssl-patch/openssl-3.0.0-dev-chacha_draft.patch
+    cd ${cur_dir}/starry-lnmp/nginx
+    wget https://gist.githubusercontent.com/CarterLi/f6e21d4749984a255edc7b358b44bf58/raw/4a7ad66a9a29ffade34d824549ed663bc4b5ac98/use_openssl_md5_sha1.diff
+    wget http://http.us.debian.org/debian/pool/main/liba/libatomic-ops/libatomic-ops-dev_7.6.10-1_amd64.deb
+    dpkg -i libatomic-ops-dev_7.6.10-1_amd64.deb
+    tar -zxv -f nginx-1.15.12.tar.gz
+    cd nginx-1.15.12
+    patch -p1 < ${cur_dir}/starry-lnmp/patch/kn007-patch/nginx.patch
+    patch -p1 < ${cur_dir}/starry-lnmp/nginx/use_openssl_md5_sha1.diff
     if [[ "${DISTRO}" = "Fedora" && ${Fedora_Version} -ge 28 ]]; then
         patch -p1 < ${cur_dir}/src/patch/nginx-libxcrypt.patch
     fi
@@ -83,10 +95,10 @@ Install_Nginx()
     if [[ "${Nginx_Ver_Com}" == "0" ||  "${Nginx_Ver_Com}" == "1" ]]; then
         ./configure --user=www --group=www --prefix=/usr/local/nginx --with-http_stub_status_module --with-http_ssl_module --with-http_spdy_module --with-http_gzip_static_module --with-ipv6 --with-http_sub_module ${Nginx_With_Openssl} ${Nginx_Module_Lua} ${NginxMAOpt} ${Nginx_Modules_Options}
     else
-        ./configure --user=www --group=www --prefix=/usr/local/nginx --with-http_stub_status_module --with-http_ssl_module --with-http_v2_module --with-http_gzip_static_module --with-http_sub_module --with-stream --with-stream_ssl_module ${Nginx_With_Openssl} ${Nginx_Module_Lua} ${NginxMAOpt} ${Nginx_Modules_Options}
+        ./configure --user=www --group=www --prefix=/usr/local/nginx --with-http_stub_status_module --with-http_ssl_module --with-http_v2_module --with-http_v2_hpack_enc --with-http_realip_module --with-http_gzip_static_module --with-http_sub_module --with-stream --with-stream_ssl_module --with-stream_ssl_preread_module --with-stream_realip_module --with-libatomic --with-pcre --with-pcre-jit --with-threads --with-file-aio --with-ld-opt='-Wl,-z,relro -Wl,-z,now -fPIC -ljemalloc -lrt' --with-cc-opt='-m64 -O3 -g -DTCP_FASTOPEN=23 -ffast-math -march=native -flto -fstack-protector-strong -fuse-ld=gold --param=ssp-buffer-size=4 -Wformat -Werror=format-security -fno-strict-aliasing -fPIC -Wdate-time -Wp,-D_FORTIFY_SOURCE=2 -gsplit-dwarf' --with-zlib=${cur_dir}/starry-lnmp/zlib-cf --add-module=${cur_dir}/starry-lnmp/nginx-module/nginx-ct --add-module=${cur_dir}/starry-lnmp/nginx-module/ngx_brotli-eustas --with-openssl=${cur_dir}/starry-lnmp/openssl --with-openssl-opt='zlib enable-tls1_3 enable-weak-ssl-ciphers enable-ec_nistp_64_gcc_128 -march=native -ljemalloc -Wl,-flto' ${Nginx_With_Openssl} ${Nginx_Module_Lua} ${NginxMAOpt} ${Nginx_Modules_Options}
     fi
     Make_Install
-    cd ../
+    cd ${cur_dir}/src
 
     ln -sf /usr/local/nginx/sbin/nginx /usr/bin/nginx
 
