@@ -32,7 +32,7 @@ index e7adb63..3e5cbe1 100644
      cd ${cur_dir}/src/
      rm -rf ${cur_dir}/src/${Jemalloc_Ver}
 diff --git a/include/nginx.sh b/include/nginx.sh
-index 5c32f3d..f857115 100644
+index 5c32f3d..ec63d64 100644
 --- a/include/nginx.sh
 +++ b/include/nginx.sh
 @@ -11,12 +11,12 @@ Install_Nginx_Openssl()
@@ -50,18 +50,28 @@ index 5c32f3d..f857115 100644
          fi
      fi
  }
-@@ -71,7 +71,9 @@ Install_Nginx()
+@@ -71,7 +71,19 @@ Install_Nginx()
      cd ${cur_dir}/src
      Install_Nginx_Openssl
      Install_Nginx_Lua
 -    Tar_Cd ${Nginx_Ver}.tar.gz ${Nginx_Ver}
++    cd ${cur_dir}/starry-lnmp/zlib-cf
++    make -f Makefile.in distclean
++    cd ${cur_dir}/starry-lnmp/openssl
++    patch -p1 < ${cur_dir}/starry-lnmp/patch/hakasenyang-openssl-patch/openssl-equal-3.0.0-dev_ciphers.patch
++    patch -p1 < ${cur_dir}/starry-lnmp/patch/hakasenyang-openssl-patch/openssl-3.0.0-dev-chacha_draft.patch
 +    cd ${cur_dir}/starry-lnmp/nginx
++    wget https://gist.githubusercontent.com/CarterLi/f6e21d4749984a255edc7b358b44bf58/raw/4a7ad66a9a29ffade34d824549ed663bc4b5ac98/use_openssl_md5_sha1.diff
++    wget http://http.us.debian.org/debian/pool/main/liba/libatomic-ops/libatomic-ops-dev_7.6.10-1_amd64.deb
++    dpkg -i libatomic-ops-dev_7.6.10-1_amd64.deb
 +    tar -zxv -f nginx-1.15.12.tar.gz
 +    cd nginx-1.15.12
++    patch -p1 < ${cur_dir}/starry-lnmp/patch/kn007-patch/nginx.patch
++    patch -p1 < ${cur_dir}/starry-lnmp/nginx/use_openssl_md5_sha1.diff
      if [[ "${DISTRO}" = "Fedora" && ${Fedora_Version} -ge 28 ]]; then
          patch -p1 < ${cur_dir}/src/patch/nginx-libxcrypt.patch
      fi
-@@ -83,10 +85,10 @@ Install_Nginx()
+@@ -83,10 +95,10 @@ Install_Nginx()
      if [[ "${Nginx_Ver_Com}" == "0" ||  "${Nginx_Ver_Com}" == "1" ]]; then
          ./configure --user=www --group=www --prefix=/usr/local/nginx --with-http_stub_status_module --with-http_ssl_module --with-http_spdy_module --with-http_gzip_static_module --with-ipv6 --with-http_sub_module ${Nginx_With_Openssl} ${Nginx_Module_Lua} ${NginxMAOpt} ${Nginx_Modules_Options}
      else
