@@ -424,8 +424,9 @@ Install_Pcre()
     if [ ! -s /usr/bin/pcre-config ] || /usr/bin/pcre-config --version | grep -vEqi '^8.'; then
         Echo_Blue "[+] Installing ${Pcre_Ver}"
         cd ${cur_dir}/starry-lnmp/pcre
-        tar -jxv -f pcre*.tar.bz2 -C pcre --strip-components=1
-        cd pcre
+        mkdir pcre-src
+        tar -jxv -f pcre*.tar.bz2 -C pcre-src --strip-components=1
+        cd pcre-src
         ./configure
         Make_Install
         cd ${cur_dir}/src/
@@ -437,8 +438,9 @@ Install_Jemalloc()
 {
     Echo_Blue "[+] Installing ${Jemalloc_Ver}"
     cd ${cur_dir}/starry-lnmp/jemalloc
-    tar -jxv -f jemalloc*.tar.bz2 -C jemalloc --strip-components=1
-    cd jemalloc
+    mkdir jemalloc-src
+    tar -jxv -f jemalloc*.tar.bz2 -C jemalloc-src --strip-components=1
+    cd jemalloc-src
     ./autogen.sh
     ./configure
     Make_Install
