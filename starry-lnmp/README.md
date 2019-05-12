@@ -1,7 +1,7 @@
 | Source | Description | Version |
 | ------ | ----------- | :-----: |
 | [Nginx] | | 1.15.12 |
-| [OpenSSL] | TLS/SSL and crypto library | 3.0.0-dev(default) |
+| [OpenSSL] | TLS/SSL and crypto library | 1.1.1b |
 | [jemalloc] | | 5.2.0 |
 | [zlib-cf] | Cloudflare fork of zlib | default |
 | [PCRE] | | 8.43 |
@@ -11,7 +11,7 @@
 | [kn007-patch] | Nginx Patch | default |
 
 [Nginx]:https://nginx.org
-[OpenSSL]:https://github.com/openssl/openssl
+[OpenSSL]:https://www.openssl.org
 [jemalloc]:https://github.com/jemalloc/jemalloc
 [zlib-cf]:https://github.com/cloudflare/zlib
 [PCRE]:https://sourceforge.net/projects/pcre/files/pcre
