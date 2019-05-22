@@ -1,6 +1,6 @@
 | Source | Description | Version |
 | ------ | ----------- | :-----: |
-| [Nginx] | | 1.15.12 |
+| [Nginx] | | 1.17.0 |
 | [OpenSSL] | TLS/SSL and crypto library | 1.1.1b |
 | [jemalloc] | | 5.2.0 |
 | [zlib-cf] | Cloudflare fork of zlib | default |

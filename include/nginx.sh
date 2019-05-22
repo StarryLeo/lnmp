@@ -77,7 +77,6 @@ Install_Nginx()
     mkdir openssl-src
     tar -zxv -f openssl*.tar.gz -C openssl-src --strip-components=1
     cd openssl-src
-    patch -p1 < ${cur_dir}/starry-lnmp/patch/hakasenyang-openssl-patch/openssl-equal-1.1.1b_ciphers.patch
     patch -p1 < ${cur_dir}/starry-lnmp/patch/hakasenyang-openssl-patch/openssl-1.1.1b-chacha_draft.patch
     cd ${cur_dir}/starry-lnmp/nginx
     wget https://gist.githubusercontent.com/CarterLi/f6e21d4749984a255edc7b358b44bf58/raw/4a7ad66a9a29ffade34d824549ed663bc4b5ac98/use_openssl_md5_sha1.diff
