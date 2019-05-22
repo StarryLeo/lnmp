@@ -105,11 +105,16 @@ Check_Hosts()
 RHEL_Modify_Source()
 {
     Get_RHEL_Version
-    \cp ${cur_dir}/conf/CentOS-Base-163.repo /etc/yum.repos.d/CentOS-Base-163.repo
-    sed -i "s/\$releasever/${RHEL_Ver}/g" /etc/yum.repos.d/CentOS-Base-163.repo
-    sed -i "s/RPM-GPG-KEY-CentOS-6/RPM-GPG-KEY-CentOS-${RHEL_Ver}/g" /etc/yum.repos.d/CentOS-Base-163.repo
-    yum clean all
-    yum makecache
+    if [ "${RHELRepo}" = "local" ]; then
+        echo "DO NOT change RHEL repository, use the repository you set."
+    else
+        echo "RHEL will use 163 centos repository..."
+        \cp ${cur_dir}/conf/CentOS-Base-163.repo /etc/yum.repos.d/CentOS-Base-163.repo
+        sed -i "s/\$releasever/${RHEL_Ver}/g" /etc/yum.repos.d/CentOS-Base-163.repo
+        sed -i "s/RPM-GPG-KEY-CentOS-6/RPM-GPG-KEY-CentOS-${RHEL_Ver}/g" /etc/yum.repos.d/CentOS-Base-163.repo
+        yum clean all
+        yum makecache
+    fi
 }
 
 Ubuntu_Modify_Source()
@@ -421,7 +426,7 @@ Install_Curl()
 
 Install_Pcre()
 {
-    if [ ! -s /usr/bin/pcre-config ] || /usr/bin/pcre-config --version | grep -vEqi '^8.'; then
+    if ! command -v pcre-config >/dev/null 2>&1 || pcre-config --version | grep -vEqi '^8.'; then
         Echo_Blue "[+] Installing ${Pcre_Ver}"
         cd ${cur_dir}/starry-lnmp/pcre
         mkdir pcre-src
@@ -476,7 +481,7 @@ Install_TCMalloc()
 
 Install_Icu4c()
 {
-    if [ ! -s /usr/bin/icu-config ] || /usr/bin/icu-config --version | grep '^3.'; then
+    if ! command -v icu-config >/dev/null 2>&1 || icu-config --version | grep '^3.'; then
         Echo_Blue "[+] Installing ${Libicu4c_Ver}"
         cd ${cur_dir}/src
         Download_Files ${Download_Mirror}/lib/icu4c/${Libicu4c_Ver}-src.tgz ${Libicu4c_Ver}-src.tgz
@@ -625,6 +630,10 @@ CentOS_Lib_Opt()
 eof
 
     echo "fs.file-max=65535" >> /etc/sysctl.conf
+
+    if echo "${Fedora_Version}" | grep -Eqi "3[0-9]" && [ ! -d "/etc/init.d" ]; then
+        ln -sf /etc/rc.d/init.d /etc/init.d
+    fi
 }
 
 Deb_Lib_Opt()
