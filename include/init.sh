@@ -276,7 +276,12 @@ Check_Download()
         Download_Files ${Download_Mirror}/web/nginx/${Nginx_Ver}.tar.gz ${Nginx_Ver}.tar.gz
     fi
     if [[ "${DBSelect}" =~ ^[12345]$ ]]; then
-        Download_Files ${Download_Mirror}/datebase/mysql/${Mysql_Ver}.tar.gz ${Mysql_Ver}.tar.gz
+        if [ -z "${Install_MySQL_From_Binary}" ]; then
+            Download_Files ${Download_Mirror}/datebase/mysql/${Mysql_Ver}.tar.gz ${Mysql_Ver}.tar.gz
+        else
+            Mysql_Ver_Short=`echo ${Mysql_Ver##*-} | cut -d. -f1-2`
+            Download_Files http://cdn.mysql.com/Downloads/MySQL-${Mysql_Ver_Short}/${Mysql_Ver}-linux-glibc2.12-${SYS_BIT_b}.tar.xz ${Mysql_Ver}-linux-glibc2.12-${SYS_BIT_b}.tar.xz
+        fi
     elif [[ "${DBSelect}" =~ ^[6789]|10$ ]]; then
         Download_Files ${Download_Mirror}/datebase/mariadb/${Mariadb_Ver}.tar.gz ${Mariadb_Ver}.tar.gz
     fi

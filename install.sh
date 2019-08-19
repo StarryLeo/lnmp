@@ -112,7 +112,11 @@ Init_Install()
     elif [ "${DBSelect}" = "4" ]; then
         Install_MySQL_57
     elif [ "${DBSelect}" = "5" ]; then
-        Install_MySQL_80
+        if [ -z "${Install_MySQL_From_Binary}" ]; then
+            Install_MySQL_80
+        else
+            Install_MySQL_80_From_Binary
+        fi
     elif [ "${DBSelect}" = "6" ]; then
         Install_MariaDB_5
     elif [ "${DBSelect}" = "7" ]; then

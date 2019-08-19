@@ -65,7 +65,12 @@ Database_Selection()
 
     if [[ "${DBSelect}" =~ ^5|10$ ]] && [ `free -m | grep Mem | awk '{print  $2}'` -le 1024 ]; then
         echo "Memory less than 1GB, can't install MySQL 8.0 or MairaDB 10.3!"
-        exit 1
+        read -p "Do you want to install from binary? [Y/n]: " answer
+        if [[ "${answer}" =~ ^[yY]$ ]]; then
+            Install_MySQL_From_Binary="y"
+        else
+            exit 1
+        fi
     fi
 
     if [[ "${DBSelect}" =~ ^[6789]|10$ ]]; then
@@ -400,8 +405,16 @@ Get_OS_Bit()
 {
     if [[ `getconf WORD_BIT` = '32' && `getconf LONG_BIT` = '64' ]] ; then
         Is_64bit='y'
+        SYS_BIT_a=x86_64 #mariadb
+        SYS_BIT_b=x86_64 #mysql
+        SYS_BIT_c=x86_64 #ZendGuardLoader
+        SYS_BIT_d=x86-64 #ioncube
     else
         Is_64bit='n'
+        SYS_BIT_a=x86    #mariadb
+        SYS_BIT_b=i686   #mysql
+        SYS_BIT_c=i386   #ZendGuardLoader
+        SYS_BIT_d=x86    #ioncube
     fi
 }
 

@@ -180,7 +180,11 @@ Clean_DB_Src_Dir()
 {
     echo "Clean database src directory..."
     if [[ "${DBSelect}" =~ ^[12345]$ ]]; then
-        rm -rf ${cur_dir}/src/${Mysql_Ver}
+        if [ -z "${Install_MySQL_From_Binary}" ]; then
+            rm -rf ${cur_dir}/src/${Mysql_Ver}
+        else
+            rm -rf ${cur_dir}/src/${Mysql_Ver}-linux-glibc2.12-${SYS_BIT_b}
+        fi
     elif [[ "${DBSelect}" =~ ^[6789]|10$ ]]; then
         rm -rf ${cur_dir}/src/${Mariadb_Ver}
     fi

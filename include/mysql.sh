@@ -723,3 +723,117 @@ EOF
 
     MySQL_Sec_Setting
 }
+
+Install_MySQL_80_From_Binary()
+{
+    Echo_Blue "[+] Installing ${Mysql_Ver}..."
+    rm -f /etc/my.cnf
+
+    [ ! -d /usr/local/mysql ] && mkdir -p /usr/local/mysql
+    tar -Jx -f ${Mysql_Ver}-linux-glibc2.12-${SYS_BIT_b}.tar.xz
+    mv ${Mysql_Ver}-linux-glibc2.12-${SYS_BIT_b}/* /usr/local/mysql
+
+    groupadd mysql
+    useradd -s /sbin/nologin -M -g mysql mysql
+
+    chown -R root:mysql /usr/local/mysql
+    sed -i 's#executing mysqld_safe#executing mysqld_safe\nexport LD_PRELOAD=/usr/local/lib/libjemalloc.so#' /usr/local/mysql/bin/mysqld_safe
+
+    cat > /etc/my.cnf<<EOF
+[client]
+#password   = your_password
+port        = 3306
+socket      = /tmp/mysql.sock
+
+[mysqld]
+port        = 3306
+socket      = /tmp/mysql.sock
+basedir = /usr/local/mysql
+datadir = ${MySQL_Data_Dir}
+skip-external-locking
+key_buffer_size = 16M
+max_allowed_packet = 1M
+table_open_cache = 64
+sort_buffer_size = 512K
+net_buffer_length = 8K
+read_buffer_size = 256K
+read_rnd_buffer_size = 512K
+myisam_sort_buffer_size = 8M
+thread_cache_size = 8
+tmp_table_size = 16M
+# default is 1
+performance_schema = 0
+
+init-connect = 'SET NAMES utf8mb4'
+character-set-server = utf8mb4
+collation-server = utf8mb4_general_ci
+
+explicit_defaults_for_timestamp = true
+#skip-networking
+max_connections = 500
+max_connect_errors = 100
+open_files_limit = 65535
+default_authentication_plugin = mysql_native_password
+
+log-bin=mysql-bin
+binlog_format=mixed
+server-id   = 1
+binlog_expire_logs_seconds = 864000
+early-plugin-load = ""
+
+default_storage_engine = InnoDB
+innodb_file_per_table = 1
+innodb_data_home_dir = ${MySQL_Data_Dir}
+innodb_data_file_path = ibdata1:10M:autoextend
+innodb_log_group_home_dir = ${MySQL_Data_Dir}
+# default is 128M
+innodb_buffer_pool_size = 64M
+# default is 50M
+innodb_log_file_size = 32M
+innodb_log_buffer_size = 8M
+innodb_flush_log_at_trx_commit = 1
+innodb_lock_wait_timeout = 50
+
+[mysqldump]
+quick
+max_allowed_packet = 16M
+
+[mysql]
+no-auto-rehash
+
+[myisamchk]
+key_buffer_size = 20M
+sort_buffer_size = 20M
+read_buffer = 2M
+write_buffer = 2M
+
+[mysqlhotcopy]
+interactive-timeout
+
+${MySQLMAOpt}
+EOF
+
+    MySQL_Opt
+    Check_MySQL_Data_Dir
+    chown -R mysql:mysql ${MySQL_Data_Dir}
+    /usr/local/mysql/bin/mysqld --initialize-insecure --basedir=/usr/local/mysql --datadir=${MySQL_Data_Dir} --user=mysql
+    chgrp -R mysql /usr/local/mysql/.
+    \cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysql
+    chmod 755 /etc/init.d/mysql
+    sed -i 's#^basedir=.*#basedir=/usr/local/mysql#' /etc/init.d/mysql
+    sed -i "s#^datadir=.*#datadir=${MySQL_Data_Dir}#" /etc/init.d/mysql
+
+    [ -z "$(grep ^'export PATH' /etc/profile)" ] && echo "export PATH=/usr/local/mysql/bin:\$PATH" >> /etc/profile
+    [ -n "$(grep ^'export PATH' /etc/profile)" -a -z "$(grep /usr/local/mysql /etc/profile)" ] && sed -i 's#^export PATH=\(.*\)#export PATH=/usr/local/mysql/bin:\1#' /etc/profile
+    . /etc/profile
+
+    cat > /etc/ld.so.conf.d/mysql.conf<<EOF
+    /usr/local/mysql/lib
+    /usr/local/lib
+EOF
+    ldconfig
+    ln -sf /usr/local/mysql/lib/mysql /usr/lib/mysql
+    ln -sf /usr/local/mysql/include/mysql /usr/include/mysql
+
+    MySQL_Sec_Setting
+}
