@@ -823,8 +823,8 @@ EOF
     sed -i 's#^basedir=.*#basedir=/usr/local/mysql#' /etc/init.d/mysql
     sed -i "s#^datadir=.*#datadir=${MySQL_Data_Dir}#" /etc/init.d/mysql
 
-    [ -z "$(grep ^'export PATH' /etc/profile)" ] && echo "export PATH=/usr/local/mysql/bin:\$PATH" >> /etc/profile
-    [ -n "$(grep ^'export PATH' /etc/profile)" -a -z "$(grep /usr/local/mysql /etc/profile)" ] && sed -i 's#^export PATH=\(.*\)#export PATH=/usr/local/mysql/bin:\1#' /etc/profile
+    [ -z "$(grep ^'export PATH=' /etc/profile)" ] && echo "export PATH=/usr/local/mysql/bin:\$PATH" >> /etc/profile
+    [ -n "$(grep ^'export PATH=' /etc/profile)" -a -z "$(grep /usr/local/mysql /etc/profile)" ] && sed -i 's#^export PATH=\(.*\)#export PATH=/usr/local/mysql/bin:\1#' /etc/profile
     . /etc/profile
 
     cat > /etc/ld.so.conf.d/mysql.conf<<EOF

@@ -63,6 +63,10 @@ DB_Dependent()
         fi
         for packages in make cmake gcc gcc-c++ gcc-g77 flex bison wget zlib zlib-devel openssl openssl-devel ncurses ncurses-devel libaio-devel rpcgen libtirpc-devel patch cyrus-sasl-devel;
         do yum -y install $packages; done
+
+        if [ -n "${Install_MySQL_From_Binary}" ]; then
+            yum -y install numactl numactl-libs
+        fi
     elif [ "$PM" = "apt" ]; then
         apt-get update -y
         for removepackages in mysql-client mysql-server mysql-common mysql-server-core-5.5 mysql-client-5.5 mariadb-client mariadb-server mariadb-common;
@@ -72,6 +76,10 @@ DB_Dependent()
         dpkg -P mariadb-client mariadb-server mariadb-common
         for packages in debian-keyring debian-archive-keyring build-essential gcc g++ make cmake autoconf automake wget openssl libssl-dev zlib1g zlib1g-dev libncurses5 libncurses5-dev bison libaio-dev libtirpc-dev libsasl2-dev;
         do apt-get --no-install-recommends install -y $packages; done
+
+        if [ -n "${Install_MySQL_From_Binary}" ]; then
+            apt-get --no-install-recommends install -y numactl
+        fi
     fi
 }
 

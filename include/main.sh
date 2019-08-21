@@ -64,7 +64,7 @@ Database_Selection()
     esac
 
     if [[ "${DBSelect}" =~ ^5|10$ ]] && [ `free -m | grep Mem | awk '{print  $2}'` -le 1024 ]; then
-        echo "Memory less than 1GB, can't install MySQL 8.0 or MairaDB 10.3!"
+        echo "Memory less than 1GB, can't install MySQL 8.0 or MairaDB 10.3 from source!"
         read -p "Do you want to install from binary? [Y/n]: " answer
         if [[ "${answer}" =~ ^[yY]$ ]]; then
             Install_MySQL_From_Binary="y"
